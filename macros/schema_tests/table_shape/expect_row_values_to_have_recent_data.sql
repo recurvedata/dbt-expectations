@@ -35,6 +35,18 @@ where
     -- to avoid false negatives
     coalesce(max_timestamp, cast('{{ default_start_date }}' as {{ dbt_expectations.type_timestamp() }}))
         <
-        cast({{ dbt.dateadd(datepart, interval * -1, dbt_date.now()) }} as {{ dbt_expectations.type_timestamp() }})
+        cast({{ dbt_expectations.get_dateadd(datepart, interval * -1, dbt_date.now()) }} as {{ dbt_expectations.type_timestamp() }})
 
+{% endmacro %}
+
+{% macro get_dateadd(datepart, interval, from_date_or_timestamp) %}
+{{ adapter.dispatch('get_dateadd', 'dbt_expectations') (datepart, interval, from_date_or_timestamp) }}
+{% endmacro %}
+
+{% macro default__get_dateadd(datepart, interval, from_date_or_timestamp) %}
+{{ dbt.dateadd(datepart, interval, from_date_or_timestamp) }}
+{% endmacro %}
+
+{% macro mysql__get_dateadd(datepart, interval, from_date_or_timestamp) %}
+DATE_ADD( {{from_date_or_timestamp}}, INTERVAL {{interval}} {{datepart}} )
 {% endmacro %}
