@@ -24,6 +24,78 @@
     {% endif %}
 {% endmacro -%}
 
+{% macro get_full_join_stats(n_cols) -%}
+        {{ adapter.dispatch('get_full_join_stats', 'dbt_expectations') (n_cols) }}
+{%- endmacro %}
+
+{%- macro default__get_full_join_stats(n_cols) %}
+        select
+            {% for i in range(1, n_cols + 1) -%}
+            coalesce(a.col_{{ i }}, b.col_{{ i }}) as col_{{ i }},
+            {% endfor %}
+            a.expression,
+            b.expression as compare_expression,
+            abs(coalesce(a.expression, 0) - coalesce(b.expression, 0)) as expression_difference,
+            abs(coalesce(a.expression, 0) - coalesce(b.expression, 0))/
+                nullif(a.expression * 1.0, 0) as expression_difference_percent
+        from
+        {% if n_cols > 0 %}
+            a
+            full outer join
+            b on
+            {% for i in range(1, n_cols + 1) -%}
+                a.col_{{ i }} = b.col_{{ i }} {% if not loop.last %}and{% endif %}
+            {% endfor -%}
+        {% else %}
+            a cross join b
+        {% endif %}
+{% endmacro -%}
+
+{%- macro mysql__get_full_join_stats(n_cols) %}
+        select
+            {% for i in range(1, n_cols + 1) -%}
+            coalesce(a.col_{{ i }}, b.col_{{ i }}) as col_{{ i }},
+            {% endfor %}
+            a.expression,
+            b.expression as compare_expression,
+            abs(coalesce(a.expression, 0) - coalesce(b.expression, 0)) as expression_difference,
+            abs(coalesce(a.expression, 0) - coalesce(b.expression, 0))/
+                nullif(a.expression * 1.0, 0) as expression_difference_percent
+        from
+        {% if n_cols > 0 %}
+            a
+            left join
+            b on
+            {% for i in range(1, n_cols + 1) -%}
+                a.col_{{ i }} = b.col_{{ i }} {% if not loop.last %}and{% endif %}
+            {% endfor -%}
+        {% else %}
+            a cross join b
+        {% endif %}
+
+        union
+
+        select
+            {% for i in range(1, n_cols + 1) -%}
+            coalesce(a.col_{{ i }}, b.col_{{ i }}) as col_{{ i }},
+            {% endfor %}
+            a.expression,
+            b.expression as compare_expression,
+            abs(coalesce(a.expression, 0) - coalesce(b.expression, 0)) as expression_difference,
+            abs(coalesce(a.expression, 0) - coalesce(b.expression, 0))/
+                nullif(a.expression * 1.0, 0) as expression_difference_percent
+        from
+        {% if n_cols > 0 %}
+            a
+            right join
+            b on
+            {% for i in range(1, n_cols + 1) -%}
+                a.col_{{ i }} = b.col_{{ i }} {% if not loop.last %}and{% endif %}
+            {% endfor -%}
+        {% else %}
+            a cross join b
+        {% endif %}
+{% endmacro -%}
 
 {% test equal_expression(model, expression,
                                 compare_model=None,
@@ -74,27 +146,7 @@
         {{ dbt_expectations.get_select(compare_model, compare_expression, compare_row_condition, compare_group_by) }}
     ),
     final as (
-
-        select
-            {% for i in range(1, n_cols + 1) -%}
-            coalesce(a.col_{{ i }}, b.col_{{ i }}) as col_{{ i }},
-            {% endfor %}
-            a.expression,
-            b.expression as compare_expression,
-            abs(coalesce(a.expression, 0) - coalesce(b.expression, 0)) as expression_difference,
-            abs(coalesce(a.expression, 0) - coalesce(b.expression, 0))/
-                nullif(a.expression * 1.0, 0) as expression_difference_percent
-        from
-        {% if n_cols > 0 %}
-            a
-            full outer join
-            b on
-            {% for i in range(1, n_cols + 1) -%}
-                a.col_{{ i }} = b.col_{{ i }} {% if not loop.last %}and{% endif %}
-            {% endfor -%}
-        {% else %}
-            a cross join b
-        {% endif %}
+        {{ dbt_expectations.get_full_join_stats(n_cols) }}
     )
     -- DEBUG:
     -- select * from final

@@ -19,6 +19,10 @@
     timestamp(3)
 {%- endmacro %}
 
+{% macro mysql__type_timestamp() -%}
+    datetime
+{%- endmacro %}
+
 {# datetime  -------------------------------------------------     #}
 
 {% macro type_datetime() -%}
