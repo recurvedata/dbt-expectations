@@ -23,6 +23,10 @@
     datetime
 {%- endmacro %}
 
+{% macro doris__type_timestamp() -%}
+    datetime
+{%- endmacro %}
+
 {# datetime  -------------------------------------------------     #}
 
 {% macro type_datetime() -%}
