@@ -16,3 +16,8 @@
     percentile({{ field }}, {{ quantile }})
     over({%- if partition %}partition by {{ partition }}{% endif -%})
 {% endmacro %}
+
+{% macro doris__quantile(field, quantile, partition) -%}
+    percentile({{ field }}, {{ quantile }})
+    over({%- if partition %}partition by {{ partition }}{% endif -%})
+{% endmacro %}
