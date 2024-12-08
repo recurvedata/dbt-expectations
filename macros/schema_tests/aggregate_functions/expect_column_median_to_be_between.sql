@@ -19,7 +19,7 @@
 
 {% macro default__median_expr_between(model, column_name, min_value, max_value, group_by, row_condition, strictly) %}
 {% set expression %}
-{{ dbt_expectations.median(model, column_name, 'a') }}
+{{ dbt_expectations.median(model, column_name) }}
 {% endset %}
 {{ dbt_expectations.expression_between(model,
                                         expression=expression,
