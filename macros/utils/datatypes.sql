@@ -27,6 +27,10 @@
     datetime
 {%- endmacro %}
 
+{% macro starrocks__type_timestamp() -%}
+    datetime
+{%- endmacro %}
+
 {# datetime  -------------------------------------------------     #}
 
 {% macro type_datetime() -%}

@@ -72,6 +72,16 @@ length(regexp_extract({{ source_value }}, '{{ regexp }}', 0))
 length(regexp_extract({{ source_value }}, '{{ regexp }}', 0))
 {% endmacro %}
 
+{% macro starrocks__regexp_instr(source_value, regexp, position, occurrence, is_raw, flags) %}
+{% if is_raw or flags %}
+    {{ exceptions.warn(
+            "is_raw and flags options are not supported for this adapter "
+            ~ "and are being ignored."
+    ) }}
+{% endif %}
+length(regexp_extract({{ source_value }}, '{{ regexp }}', 0))
+{% endmacro %}
+
 {% macro trino__regexp_instr(source_value, regexp, position, occurrence, is_raw, flags) %}
     {% if flags %}
         {{ dbt_expectations._validate_re2_flags(flags) }}

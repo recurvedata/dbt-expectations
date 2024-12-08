@@ -21,3 +21,8 @@
     percentile({{ field }}, {{ quantile }})
     {%- if partition %}over(partition by {{ partition }}){% endif -%}
 {% endmacro %}
+
+{% macro starrocks__quantile(field, quantile, partition) -%}
+    percentile({{ field }}, {{ quantile }})
+    {%- if partition %}over(partition by {{ partition }}){% endif -%}
+{% endmacro %}
