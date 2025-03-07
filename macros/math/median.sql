@@ -3,7 +3,7 @@
 {% endmacro %}
 
 {% macro default__median(field, model, expr_var) %}
-    {{ dbt_expectations.percentile_cont(field, 0.5) }}
+{{ dbt_expectations.percentile_cont(field, 0.5) }}
 {% endmacro %}
 
 {% macro mysql__median(field, model, expr_var) %}

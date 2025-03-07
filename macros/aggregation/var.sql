@@ -13,8 +13,3 @@ var_samp({{ field }})
 {% macro doris__var(field) %}
 var_samp({{ field }})
 {% endmacro %}
-
-
-
-
-
