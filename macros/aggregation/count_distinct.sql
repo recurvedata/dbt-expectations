@@ -5,3 +5,4 @@
 {%- macro default__count_distinct(field) -%}
 count(distinct {{ field }})
 {%- endmacro -%}
+

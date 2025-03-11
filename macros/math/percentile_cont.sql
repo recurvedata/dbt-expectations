@@ -26,3 +26,8 @@
     percentile_cont({{ field }}, {{ quantile }})
     {%- if partition %}over(partition by {{ partition }}){% endif -%}
 {% endmacro %}
+
+{% macro impala__quantile(field, quantile, partition) -%}
+    percentile_cont({{ field }}, {{ quantile }})
+    {%- if partition %}over(partition by {{ partition }}){% endif -%}
+{% endmacro %}

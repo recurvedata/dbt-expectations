@@ -9,13 +9,25 @@
                                                 tolerance=0.0,
                                                 tolerance_percent=None
                                                 ) -%}
+{% if expression is not none %}
+    {% set processed_expression = dbt_expectations.expr2macro(expression) %}
+{% else %}
+    {% set processed_expression = expression %}
+{% endif %}
+
+
+{% if compare_expression is not none %}
+    {% set processed_compare_expression = dbt_expectations.expr2macro(compare_expression) %}
+{% else %}
+    {% set processed_compare_expression = compare_expression %}
+{% endif %}
 
 
 {{ dbt_expectations.test_equal_expression(
     model,
-    expression=expression,
+    expression=processed_expression,
     compare_model=compare_model,
-    compare_expression=compare_expression,
+    compare_expression=processed_compare_expression,
     group_by=group_by,
     compare_group_by=compare_group_by,
     row_condition=row_condition,
