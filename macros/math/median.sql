@@ -1,12 +1,12 @@
-{% macro median(model, field, expr_var) %}
-{{ adapter.dispatch('median', 'dbt_expectations') (model, field, expr_var) }}
+{% macro median(field, model=None, expr_var=None) %}
+{{ adapter.dispatch('median', 'dbt_expectations')(field, model, expr_var) }}
 {% endmacro %}
 
-{% macro default__median(model, field, expr_var) %}
+{% macro default__median(field, model, expr_var) %}
 {{ dbt_expectations.percentile_cont(field, 0.5) }}
 {% endmacro %}
 
-{% macro mysql__median(model, field, expr_var) %}
+{% macro mysql__median(field, model, expr_var) %}
 (
 select
 	avg({{field}})
